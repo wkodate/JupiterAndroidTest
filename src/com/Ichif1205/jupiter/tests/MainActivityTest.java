@@ -27,11 +27,6 @@ public class MainActivityTest extends
     private static final String TAG = "MainActivityTest";
 
     /**
-     * MainActivity.
-     */
-    private MainActivity activity;
-
-    /**
      * テスト用URL.
      */
     private final String SAMPLE_URL = "http://www.test.com";
@@ -46,6 +41,11 @@ public class MainActivityTest extends
      */
     private final String SAMPLE_RSS_TITLE = "test rss title";
 
+    /**
+     * MainActivity.
+     */
+    private MainActivity activity;
+
     public MainActivityTest() {
         super(MainActivity.class);
     }
@@ -54,6 +54,11 @@ public class MainActivityTest extends
     protected void setUp() throws Exception {
         super.setUp();
         this.activity = getActivity();
+    }
+
+    @Override
+    protected void tearDown() {
+        activity.finish();
     }
 
     /**
@@ -92,7 +97,6 @@ public class MainActivityTest extends
         // listviewのチェック
         assertTrue(activity.getListview().isEnabled());
         assertFalse(activity.getListview().getAdapter().isEmpty());
-        // TODO: adapterの中身チェック
 
         // loaderのチェック
         assertFalse(activity.getAsyncFetcher().isStarted());
@@ -113,23 +117,13 @@ public class MainActivityTest extends
     }
 
     /**
-     * Intentする配列のチェック.
+     * WebviewへのIntentをチェック.
      */
-    public void testIntentArrays() {
-        // ItemDataに必要な要素を追加
-        List<ItemData> dataList = new ArrayList<>();
-        ItemData item = makeItemData(SAMPLE_URL, SAMPLE_TITLE, SAMPLE_RSS_TITLE);
-        dataList.add(item);
+    public void testWebviewIntent() {
+        Intent intent = activity.getWebviewIntent(SAMPLE_URL, SAMPLE_TITLE); ;
 
-        activity.createIntentData(dataList);
-
-        // クラス変数を確認
-        String[] urls = activity.getUrls();
-        String[] titles = activity.getTitles();
-        String[] rssTitles = activity.getRssTitles();
-        assertEquals(SAMPLE_URL, urls[0]);
-        assertEquals(SAMPLE_TITLE, titles[0]);
-        assertEquals(SAMPLE_RSS_TITLE, rssTitles[0]);
+        assertEquals(SAMPLE_URL, intent.getExtras().get("url"));
+        assertEquals(SAMPLE_TITLE, intent.getExtras().get("title"));
     }
 
     /**
@@ -147,4 +141,5 @@ public class MainActivityTest extends
         item.setRssTitle(rssTitle);
         return item;
     }
+
 }
